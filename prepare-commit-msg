@@ -1,0 +1,73 @@
+#!/usr/bin/env node 
+
+var tagList = ['dkdk','test', 'kk'];
+var errorMsg = '合并的两条分支命名不匹配';
+var successMsg = '合并分支后commit检测通过';
+var checkTag;
+
+var spawnSync = require('child_process').spawnSync;
+var fs = require('fs');
+
+var dirnameLen = __dirname.length;
+var gitRoot = __dirname.substring(0, dirnameLen - 5);
+
+var mergeMsgFile = gitRoot + 'MERGE_MSG';
+
+if (fs.existsSync(mergeMsgFile)) {
+    var result = fs.readFileSync(mergeMsgFile).toString();
+    var firstEndLineIndex = result.indexOf('\n');
+    var firstLineStr = result.substring(0, firstEndLineIndex);
+    firstLineStr = firstLineStr.replace(/Merge branch |'/g, '');
+    namesList = firstLineStr.split(' into ');
+    var isNamesEqualTag = checkNamesByTag(namesList)
+    if (!isNamesEqualTag) {
+        echoMsg(1, errorMsg);
+        echoMsg(1, '检测名称列表:'+tagList);
+        echoMsg(1, '分支1:'+namesList[0]);
+        echoMsg(1, '分支2:'+namesList[1]);
+        process.exit(1);
+    } else {
+        echoMsg(2, '检测名称为:'+checkTag);
+        echoMsg(2, '分支1:'+namesList[0]);
+        echoMsg(2, '分支2:'+namesList[1]);
+        echoMsg(2, successMsg);
+        process.exit(0);
+    }
+}
+
+
+function checkNamesByTag(namesList) {
+    var result = false;
+    var resultObj = {};
+    namesList.map(nameItem => {
+        tagList.map(tagItem => {
+            addReulstObjItem(nameItem, nameItem.indexOf(tagItem) > -1);
+        })
+    })
+    //console.log('result: ', result);
+    console.log(resultObj);
+    resultObj[namesList[0]].map((item, index) => {
+        if (resultObj[namesList[0]][index] == resultObj[namesList[1]][index] && resultObj[namesList[0]][index] == true) {
+            checkTag = tagList[index];
+            result = true;
+        }
+    })
+
+    return result;
+
+    function addReulstObjItem(name, checkResult) {
+        if (resultObj[name]) {
+            resultObj[name].push(checkResult);
+        } else {
+            resultObj[name] = [checkResult]
+        }
+    }
+}
+
+/**
+ * @param  {number} num 1红色 2蓝色
+ * @param  {string} msg 消息信息
+ */
+function echoMsg(num, msg) {
+    console.log(`\x1b[3${num}m`, msg, '\x1b[0m');
+}

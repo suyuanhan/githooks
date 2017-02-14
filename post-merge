@@ -1,34 +1,40 @@
 #!/usr/bin/env node 
 
-var tagList = ['dkdk','cc', 'kk'];
+var tagList = ['trussan','saas'];
+
 var errorMsg = '合并的两条分支命名不匹配!!';
 var successMsg = '合并分支后检测通过';
 
 var execSync = require('child_process').execSync;
 var command = process.env.GIT_REFLOG_ACTION;
 
-var branchName1 = command.replace(/merge |\\n/g,'');
-var branchName2 = execSync('git rev-parse --abbrev-ref HEAD');
-var checkTag;
+if(command.indexOf('merge')!=-1){
+    
+    var branchName1 = command.replace(/merge |\\n/g,'');
+    var branchName2 = execSync('git rev-parse --abbrev-ref HEAD');
+    var checkTag;
 
-var namesList = [branchName1,branchName2];
+    var namesList = [branchName1,branchName2];
 
-var isNamesEqualTag = checkNamesByTag(namesList)
-    if (!isNamesEqualTag) {
-        echoMsg(1, '检测名称列表:'+tagList);
-        echoMsg(1, '分支1:'+namesList[0]);
-        echoMsg(1, '分支2:'+namesList[1]);
-        echoMsg(1, errorMsg);
-        echoMsg(1, errorMsg);
-        echoMsg(1, errorMsg);
-        process.exit(1);
-    } else {
-        echoMsg(2, '检测名称为:'+checkTag);
-        echoMsg(2, '分支1:'+namesList[0]);
-        echoMsg(2, '分支2:'+namesList[1]);
-        echoMsg(2, successMsg);
-        process.exit(1);
-    }
+    var isNamesEqualTag = checkNamesByTag(namesList)
+        if (!isNamesEqualTag) {
+            echoMsg(1, '检测名称列表:'+tagList);
+            echoMsg(1, '分支1:'+namesList[0]);
+            echoMsg(1, '分支2:'+namesList[1]);
+            echoMsg(1, errorMsg);
+            echoMsg(1, errorMsg);
+            echoMsg(1, errorMsg);
+            process.exit(1);
+        } else {
+            echoMsg(2, '检测名称为:'+checkTag);
+            echoMsg(2, '分支1:'+namesList[0]);
+            echoMsg(2, '分支2:'+namesList[1]);
+            echoMsg(2, successMsg);
+            process.exit(1);
+        }
+
+
+}
 
 //console.log('log branch:'+exec.toString());
 
